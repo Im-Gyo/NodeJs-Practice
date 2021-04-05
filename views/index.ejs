@@ -62,15 +62,15 @@
 							<%= post.id %>
 						</td>
 						<td>
-							<%= post.title %>
+							<a href='/detail/<%= post.id%>'><%= post.title %></a>
 						</td>
 						<td>
 							<%= post.author %>
 						</td>
 						<td>
-							<%= post.created%>
+							<%= post.created %>
 						</td>
-					</tr>	
+					</tr>
 					<% }) %>				
 				</tbody>
 			</table>
