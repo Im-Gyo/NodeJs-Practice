@@ -1,0 +1,47 @@
+h3 {
+    padding-top: 20px; padding-bottom: 20px;
+    text-align: center;
+}
+
+.table{
+    text-align: center;
+    border : 1px solid black;
+    border-collapse: separate;
+}
+
+.table th {
+    text-align: center;
+}
+
+.table-active td, .table-success td, .table-warning td, .table-danger td{
+    background-color: white;
+}
+
+.pagination {
+    text-align: center;
+    display: table;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.pagination li {
+    display: inline-block;
+}
+
+.buttonCenter{
+    position: absolute;
+    bottom : 16px;
+    right: 14px;
+}
+
+.mainSearch{
+    list-style: none;
+    text-align: center;
+    display: table;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.mainSearch li{
+    display: inline;
+}
