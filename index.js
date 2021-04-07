@@ -8,7 +8,7 @@ var mysql = require('mysql');
 var bodyParser = require('body-parser'); 
 //__dirname : node.js에서 프로그램이 실행중인 파일의 위치를 나타냄
 // get과 마찬가지로 req, res, next 파라미터가 콜백 함수로 자동으로 전달, 다만 route나 http메소드에 상관없이 서버에 요청이 들어올 떄마다 무조건 콜백함수 실행
-app.use(express.static(__dirname + '/public'));W
+app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({extended:false}));
 
 //라우트로 분리

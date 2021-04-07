@@ -23,30 +23,27 @@
 				<label for="title">
 					제목
 				</label>
-				<input type="text" class="form-control" id="title" name="title" value="<%= data.title %>" disabled>
+				<input type="text" class="form-control" id="title" name="title" value="<%= data.title %>">
 			</div>
 			<div class="form-group">
 				 
 				<label for="content">
 					내용
 				</label>
-				<textarea type="text" class="form-control" id="content" name="content" disabled><%= data.content %></textarea>
+				<textarea type="text" class="form-control" id="content" name="content"><%= data.content %></textarea>
 			</div>
 			<div class="form-group">
 				 
 				<label for="author">
 					작성자
 				</label>
-				<input type="text" class="form-control" id="author" name="author" value="<%= data.author %>" disabled>
+				<input type="text" class="form-control" id="author" name="author" value="<%= data.author %>">
 			</div>
-			<!-- <button type="submit" class="btn btn-primary">
-				수정
-			</button> -->
-			<!-- <a href="/modity" class="btn btn-secondary buttonCenter" type="button">수정</a> -->
+            <button type="submit" class="btn btn-primary">
+				수정하기
+			</button>
 		</form>
-		<a href="/modify/<%= data.id %>" class="btn btn-secondary buttonCenter" type="button">수정</a>
-		<a href="/delete/<%= data.id %>" class="btn btn-secondary buttonCenter" type="button">삭제</a>
-		<a href="/" class="btn btn-secondary buttonCenter" type="button">목록</a>
+        <a href="/" class="btn btn-secondary buttonCenter" type="button">목록</a>
 			</div>
 		</div>
 	</div>

@@ -44,6 +44,27 @@ router.get('/detail/:id', function(req, res){
     // });
 });
 
+//수정페이지
+router.get('/modify/:id', function(req, res){    
+        getConnection().query('select * from posts where id = ?', [req.params.id], function(err, results){
+            res.render('modify', {data:results[0]});            
+        });    
+});
+
+//수정등록
+router.post('/modify/:id', function(req, res){    
+    var body = req.body;
+    getConnection().query('update posts set title = ?, content = ?, author = ? where id = ?', [body.title, body.content, body.author, req.params.id], function(){
+        res.redirect('/');
+    });
+});
+
+//삭제
+router.get('/delete/:id', function(req, res){        
+    getConnection().query('delete from posts where id = ?', [req.params.id], function(){
+        res.redirect('/');
+    });
+});
 
 
 function getConnection() {
