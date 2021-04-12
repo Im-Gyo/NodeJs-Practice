@@ -27,6 +27,7 @@ router.get("/pasing/:now", function(req, res){
         if(err2){
             console.log(err2);
             res.render('error')
+            return
         }        
 
         //전체 게시글 개수
@@ -34,7 +35,7 @@ router.get("/pasing/:now", function(req, res){
         totalPageCount = data[0].cnt;
 
         //현재 페이지
-        nowPage =  req.params.now;
+        var nowPage =  req.params.now;
 
         console.log("현재 페이지" + nowPage + "," + "전체 게시글" + totalPageCount);
 
@@ -53,7 +54,7 @@ router.get("/pasing/:now", function(req, res){
         //현재 세트 번호
         var nowSet = Math.ceil(nowPage / page_list_size);
         //현재 세트 내 출력될 시작 페이지(만약 2페이지면 11번째 게시물 부터 시작)
-        var startPage = (nowSet - 1 * 10) + 1;
+        var startPage = ((nowSet - 1) * 10) + 1;
         //현재 세트 내 출력될 마지막 페이지(만약 2페이지면 20번이 마지막)
         var lastPage = (startPage + page_list_size) - 1;
 
@@ -78,21 +79,19 @@ router.get("/pasing/:now", function(req, res){
             "lastPage" : lastPage
         };
 
-        console.log(result2)
+        console.log(result2);
 
-        getConnection().query('select * from posts order by id desc limit ?, ?',[no, page_size], function(err, result){
+        getConnection().query('select * from posts order by id asc limit ?, ?', [no, page_size], function(err, result){
             if(err){
                 console.log(err)
                 res.render('error');
+                return
             } else {
-                res.render(data, {
-                    data : result,
-                    pasing : result2
-                })
+                res.render('index', { data : result, pasing : result2 });
             }
-        })
-    })
-})
+        });
+    });
+});
 
 // '/' 위치에 get요청을 받는 경우, 서버에 get요청이 있을 때 실행
 //메인페이지(조회)

@@ -7,8 +7,10 @@
 
     <title>게시판 목록</title>   
     
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
+    <!-- <link href="css/bootstrap.min.css" rel="stylesheet"> -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <!-- <link href="css/style.css" rel="stylesheet"> -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
 	<link href="css/custom.css" rel="stylesheet">
 
   </head>
@@ -76,7 +78,7 @@
 			</table>
 			<div>
 				<ul class="pagination">
-					<% 
+					<%
 						var nowSet = pasing.nowSet
 						var page_size = pasing.page_size
 						var page_list_size = page_list_size
@@ -93,16 +95,24 @@
 						</li>
 					<% } %>
 
-					<%for(i = startPage; i <= lastPage; i++) { %>
-						<%if(i > totalSet) { %>
-							<% break;%>
-						<% } %>						
+					<%for(var i = startPage; i <= lastPage; i++) { 
+						if(i > totalPage) { 
+							break;
+						}						
 						
+						if(i == nowPage) {
+						%>
 						<li class="page-item">
 							<a class="page-link" href="/pasing/<%= i %>"><%= i %></a>
 						</li>
+					 <% } else {  %>
+
+						<li class="page-item">
+							<a class="page-link" href="/pasing/<%= i %>"><%= i %></a>
+						</li>
+						<% } %>
 					<% } %>
-					
+
 					<%if(nowSet < totalSet) { %>			
 					<li class="page-item">
 						<a class="page-link" href="/pasing/<%= lastPage + 1 %>">다음페이지</a>
