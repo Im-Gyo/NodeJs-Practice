@@ -1,11 +1,12 @@
-var express = require('express');
-var router = express.Router();
-var ejs = require('ejs');
-var bodyParser = require('body-parser');
-var fs = require('fs');
-var multer = require('multer');
-var mysql = require('mysql');
-var dbCon = mysql.createConnection({
+const express = require('express');
+const router = express.Router();
+const ejs = require('ejs');
+const bodyParser = require('body-parser');
+const fs = require('fs');
+const multer = require('multer');
+const mysql = require('mysql');
+const fileManager = require('../scheduler/fileManager')
+const dbCon = mysql.createConnection({
 
 });
 
@@ -23,19 +24,25 @@ router.get("/pasing/:now", function(req, res){
      // 전체 게시물 수
     var totalPageCount = 0;
 
-    getConnection().query('select count(*) as cnt from posts', function(err2, data){
+    getConnection().query('select count(*) as cnr from posts', function(err2, data){
         if(err2){
             console.log(err2);
             res.render('error')
             return
+        
         }        
+        console.log(data[0]);
+        console.log(data[0].cnr);
 
         //전체 게시글 개수
         //Select해서 가져온 posts 테이블의 게시물 갯수를 가져온 뒤 data 객체에 담아 totalPageCount에 저장
-        totalPageCount = data[0].cnt;
+        //RowDataPacket(객체를 생성하는 생성자 함수의 이름)으로 가져온 cnt객체(as 별칭)의 값을 저장
+        totalPageCount = data[0].cnr;
+
 
         //현재 페이지
         var nowPage =  req.params.now;
+
 
         console.log("현재 페이지" + nowPage + "," + "전체 게시글" + totalPageCount);
 
@@ -163,16 +170,16 @@ router.post('/boardWrite', upload.single('inputfile'), function(req, res){
     }
 });
 
-//상세페이지
+//상세페이지(파일표시)
 router.get('/detail/:id', function(req, res){    
         // 파일을 가져올 위치
-        var path = __dirname + '/../' + 'upload/images'
+        // var path = __dirname + '/../' + 'upload/images'
         getConnection().query('select * from files', function(err, result){
             if(err){
-                res.render('error');    
+                res.render('error');
             } else{
                 getConnection().query('select * from posts where id = ?', [req.params.id], function(err, results){
-                    console.log(result)
+                    console.log(result)                    
                     res.render('detail', {data:results[0], data2:result});
                 });
             }
@@ -181,11 +188,27 @@ router.get('/detail/:id', function(req, res){
 
 //파일다운로드
 router.get('/download/upload/images/:name', function(req, res){
-    var file = __dirname + '/../upload/images/' + req.params.name;
-    // var filename = req.params.name;
-    // var temp = filename.indexOf('-', 1);
-    // var temp2 = filename.indexOf(filename.substr(filename.length -1 ), 1);
-    res.download(file);
+    let fileID = req.params.name;
+
+    // 파일정보가져옴
+    fileManager.getFileInfo(fileID, 
+        //sucessCallBack
+        function(fileInfo){
+            let fileName = fileInfo[0].filename;
+            let fileLen = fileName.length;  
+            let endDot = fileName.lastIndexOf('-'); // - 기준으로 인덱스 값 반환
+            let fileExt = fileName.subString(endDot, fileLen).toLowerCase(); // 소문자로 파일명 파싱(캡처.png)
+
+            //다운로드 받을 파일 경로
+            let file = __dirname + '/../upload/images/' + fileID;
+            let customName = fileExt;
+            fileManager.getfileDownload(file, customName, req, res);
+        }, 
+        //failCallBack
+        function(err){
+            console.log(err)
+        })
+    // res.download(file);
 })
 
 //수정페이지
@@ -200,7 +223,7 @@ router.get('/modify/:id', function(req, res){
 });
 
 //수정등록
-router.post('/modify/:id', function(req, res){    
+router.post('/modify/:id', function(req, res){
     var body = req.body;
     getConnection().query('update posts set title = ?, content = ?, author = ? where id = ?', [body.title, body.content, body.author, req.params.id], function(){
         if(err){
