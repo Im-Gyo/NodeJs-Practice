@@ -4,7 +4,9 @@ const ejs = require('ejs');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const multer = require('multer');
+const mime = require('mime');
 const mysql = require('mysql');
+var iconvLite = require('iconv-lite');
 const fileManager = require('../scheduler/fileManager')
 const dbCon = mysql.createConnection({
 
@@ -28,8 +30,7 @@ router.get("/pasing/:now", function(req, res){
         if(err2){
             console.log(err2);
             res.render('error')
-            return
-        
+            return        
         }        
         console.log(data[0]);
         console.log(data[0].cnr);
@@ -186,23 +187,27 @@ router.get('/detail/:id', function(req, res){
         })
 });
 
+
+
 //파일다운로드
 router.get('/download/upload/images/:name', function(req, res){
+    const fm = new fileManager();    
     let fileID = req.params.name;
+    console.log(fm);
 
     // 파일정보가져옴
-    fileManager.getFileInfo(fileID, 
+    fm.getFileInfo(fileID, 
         //sucessCallBack
-        function(fileInfo){
+        function(fileInfo) {
             let fileName = fileInfo[0].filename;
             let fileLen = fileName.length;  
             let endDot = fileName.lastIndexOf('-'); // - 기준으로 인덱스 값 반환
-            let fileExt = fileName.subString(endDot, fileLen).toLowerCase(); // 소문자로 파일명 파싱(캡처.png)
+            let fileExt = fileName.substring(endDot+1, fileLen).toLowerCase(); // 소문자로 파일명 파싱(캡처.png)
 
             //다운로드 받을 파일 경로
             let file = __dirname + '/../upload/images/' + fileID;
             let customName = fileExt;
-            fileManager.getfileDownload(file, customName, req, res);
+            fm.getfileDownload(file, customName, req, res);
         }, 
         //failCallBack
         function(err){
