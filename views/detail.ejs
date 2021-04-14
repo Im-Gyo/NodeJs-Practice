@@ -50,7 +50,7 @@
 		<h2>파일 다운로드</h2>
 		<%if(data2 != null) { %>
 			<%data2.forEach(function(file,index) { %>
-			<a href='/download/<%= file.filename%>'><%=file.filename%></a>
+			<a href='/download/<%= file.filename%>/<%=file.id%>'><%= file.id %> - <%=file.fileOriName%></a><br>
 			<% }) %>
 		<% } %>
 			</div>

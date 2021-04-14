@@ -15,9 +15,9 @@ class FileManager{
     constructor(){};
 
     getFileInfo(fileID, successCallBack, failedCallBack) {
-        let queryString = 'select * from files';
+        let queryString = 'select filename from files where id = ?';
     
-        getConnection().query(queryString, [], function(err, result){
+        getConnection().query(queryString, [fileID], function(err, result){
             if(err){
                 console.log(err)
                 failedCallBack();
@@ -44,22 +44,32 @@ class FileManager{
             res.send('파일 다운로드 중 오류가 발생');
             return;
         }
-        }
+    }
 
     getDownloadFilename(req, filename){
         var header = req.headers['user-agent'];
     
-    if (header.includes("MSIE") || header.includes("Trident")) { 
-        return encodeURIComponent(filename).replace(/\\+/gi, "%20");
-    } else if (header.includes("Chrome")) {
-        return iconvLite.decode(iconvLite.encode(filename, "UTF-8"), 'ISO-8859-1');
-    } else if (header.includes("Opera")) {
-        return iconvLite.decode(iconvLite.encode(filename, "UTF-8"), 'ISO-8859-1');
-    } else if (header.includes("Firefox")) {
-        return iconvLite.decode(iconvLite.encode(filename, "UTF-8"), 'ISO-8859-1');
-    }
-
-    return filename;
+        if (header.includes("MSIE") || header.includes("Trident")) 
+        { 
+            return encodeURIComponent(filename).replace(/\\+/gi, "%20");
+        }
+        else if (header.includes("Chrome")) 
+        {
+            return iconvLite.decode(iconvLite.encode(filename, "UTF-8"), 'ISO-8859-1');
+        } 
+        else if (header.includes("Opera")) 
+        {
+            return iconvLite.decode(iconvLite.encode(filename, "UTF-8"), 'ISO-8859-1');
+        } 
+        else if (header.includes("Firefox")) 
+        {
+            return iconvLite.decode(iconvLite.encode(filename, "UTF-8"), 'ISO-8859-1');
+        } 
+        else 
+        {
+            return iconvLite.decode(iconvLite.encode(filename, "UTF-8"), 'ISO-8859-1');
+        }
+        
         // let header = req.header['user-agent'];
 
         // if(header.includes("MSIE") || header.includes("Trident")) {

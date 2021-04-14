@@ -30,7 +30,7 @@ router.get("/pasing/:now", function(req, res){
         if(err2){
             console.log(err2);
             res.render('error')
-            return        
+            return
         }        
         console.log(data[0]);
         console.log(data[0].cnr);
@@ -44,6 +44,9 @@ router.get("/pasing/:now", function(req, res){
         //현재 페이지
         var nowPage =  req.params.now;
 
+        router.get('/chat', function(req, res){
+            res.render('chat')
+        })
 
         console.log("현재 페이지" + nowPage + "," + "전체 게시글" + totalPageCount);
 
@@ -128,7 +131,7 @@ router.get('/boardWrite', function(req, res){
 var storage = multer.diskStorage({
     //파일 저장위치 설정
     destination : function(req, file, cb){
-         console.log(file);
+        //  console.log(file);
         if(file.mimetype == 'image/jpeg' || file.mimetype == 'image/jpg' || file.mimetype == 'image/png'){
             cb(null, 'upload/images');
         } else if(file.mimetype == 'application/pdf' || file.mimetype == 'application/txt'){
@@ -138,7 +141,7 @@ var storage = multer.diskStorage({
     
     //파일 이름 설정
     filename : function(req, file, cb){
-         console.log(file);
+        //  console.log(file);
         cb(null, Date.now() + "-" + file.originalname);
     }
 });
@@ -149,16 +152,18 @@ var upload = multer({ storage: storage });
 //작성페이지(파일업로드, 게시글)
 router.post('/boardWrite', upload.single('inputfile'), function(req, res){
     if(req.file){
-        console.log(req.file)
-        console.log(req.file.path)
-        console.log(upload)
-        console.log(upload.storage.getFilename);
-        getConnection().query('insert into files(filename) values(?)', [req.file.path], function(err, results){
+        // console.log(req.file)        
+        // console.log(req.file.filename)              
+        // console.log(req.file.path)              
+        // console.log(upload)
+        // console.log(upload.storage.getFilename);        
+        getConnection().query('insert into files(filename, fileOriName) values(?, ?)', [req.file.path, req.file.filename], function(err, results){
             if(err){
                 res.render('error');
             } else {
                 console.log('작성 진행')
                 var body = req.body;
+
                 getConnection().query('insert into posts(title, content, author) values(?,?,?)', [body.title, body.content, body.author], function(err, results){
                     if(err){
                         res.render('error');
@@ -172,7 +177,7 @@ router.post('/boardWrite', upload.single('inputfile'), function(req, res){
 });
 
 //상세페이지(파일표시)
-router.get('/detail/:id', function(req, res){    
+router.get('/detail/:id', function(req, res){
         // 파일을 가져올 위치
         // var path = __dirname + '/../' + 'upload/images'
         getConnection().query('select * from files', function(err, result){
@@ -180,7 +185,7 @@ router.get('/detail/:id', function(req, res){
                 res.render('error');
             } else{
                 getConnection().query('select * from posts where id = ?', [req.params.id], function(err, results){
-                    console.log(result)                    
+                    console.log(result)
                     res.render('detail', {data:results[0], data2:result});
                 });
             }
@@ -188,24 +193,24 @@ router.get('/detail/:id', function(req, res){
 });
 
 
-
 //파일다운로드
-router.get('/download/upload/images/:name', function(req, res){
-    const fm = new fileManager();    
-    let fileID = req.params.name;
-    console.log(fm);
+router.get('/download/upload/images/:name/:id', function(req, res){
+    const fm = new fileManager();
+    let fileID = req.params.id;
+    let filePathName = req.params.name;    
 
     // 파일정보가져옴
-    fm.getFileInfo(fileID, 
+    fm.getFileInfo(fileID,
         //sucessCallBack
         function(fileInfo) {
             let fileName = fileInfo[0].filename;
-            let fileLen = fileName.length;  
+            let fileLen = fileName.length;
             let endDot = fileName.lastIndexOf('-'); // - 기준으로 인덱스 값 반환
             let fileExt = fileName.substring(endDot+1, fileLen).toLowerCase(); // 소문자로 파일명 파싱(캡처.png)
 
             //다운로드 받을 파일 경로
-            let file = __dirname + '/../upload/images/' + fileID;
+            let file = __dirname + '/../upload/images/' + filePathName;
+            console.log(file);
             let customName = fileExt;
             fm.getfileDownload(file, customName, req, res);
         }, 
@@ -230,13 +235,17 @@ router.get('/modify/:id', function(req, res){
 //수정등록
 router.post('/modify/:id', function(req, res){
     var body = req.body;
-    getConnection().query('update posts set title = ?, content = ?, author = ? where id = ?', [body.title, body.content, body.author, req.params.id], function(){
-        if(err){
-            res.render('error')
-        } else{
-            res.redirect('/');
+    getConnection().query(
+        'update posts set title = ?, content = ?, author = ? where id = ?', 
+        [body.title, body.content, body.author, req.params.id], 
+        function(){
+            if(err){
+                res.render('error')
+            } else{
+                res.redirect('/');
+            }
         }
-    });
+    );
 });
 
 //삭제
