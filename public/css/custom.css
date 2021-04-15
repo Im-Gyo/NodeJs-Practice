@@ -54,15 +54,18 @@ h3 {
     display: inline;
 }
 
-.chatContent {
-    width: 550px;
-    display: inline;
-}
-
-.chatBox {
-    text-align: center;    
-}
-
-.chatCbox{
+.chat_View {
+    width : 100%;
     height: 800px;
+    resize: none;
+    display: block;
+}
+
+#chatSend {
+    text-align: center;
+}
+
+.message {
+    width : 50%;
+    display: inline;
 }

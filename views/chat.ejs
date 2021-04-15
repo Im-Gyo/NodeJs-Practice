@@ -9,7 +9,7 @@
 
     <link href="/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/style.css" rel="stylesheet">
-	<link href="/css/custom.css" rel="stylesheet">
+	  <link href="/css/custom.css" rel="stylesheet">
 
   </head>
   <body>
@@ -21,20 +21,39 @@
 				채팅방
 			</h3>			
 				<div class="form-group">					 					
-					<textarea type="text" class="form-control chatCbox" id="content" name="content" disabled></textarea>
-				</div>				
-            <div class = "chatBox">
-            <form method ="post" action="/boardWrite">			
-                <input type="text" class="form-control chatContent" id="title" name="title" placeholder="텍스트입력" >
-                <button type="submit" class="btn btn-primary">
-                    전송
-                </button>
-            </form>	
-            </div>    
+					<textarea id ="chatView" class="chat_View" readonly></textarea>
+				</div>				            
+            <form method ="post" action="/boardWrite" id ="chatSend">
+                <input id="name" class="name" type="text" readonly>
+                <input id="message" class="form-control message" type="text"  placeholder="텍스트입력">
+                <button type="submit" class="btn btn-primary chat" value ="chat">전송</button>
+            </form>	            
 		</div>
 	</div>
 </div>
+<!-- socket.io에서 제공하는 클라이언트(실제파일아님) -->
+<script src="/socket.io/socket.io.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.js"></script>
 
+<script>
+  let socket = io();
+  $('#chatSend').on('submit', function(e)
+  {
+    socket.emit('send message', $('#name').val(), $('#message').val());
+    $('#message').val('');
+    $('#message').focus();
+    e.preventDefault();
+  });
+  socket.on('receive message', function(msg)
+  {
+    $('#chatView').append(msg+'\n');
+    $('#chatView').scrollTop($('#chatView')[0].scrollHeight);
+  });
+  socket.on('change name', function(name)
+  {
+    $('#name').val(name);
+  });
+</script>
     <script src="/js/jquery.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/scripts.js"></script>
