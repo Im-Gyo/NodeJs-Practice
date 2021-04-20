@@ -6,6 +6,7 @@ const fs = require('fs');
 const multer = require('multer');
 const mime = require('mime');
 const mysql = require('mysql');
+const url =  require('url');
 var iconvLite = require('iconv-lite');
 const fileManager = require('../scheduler/fileManager')
 const dbCon = mysql.createConnection({
@@ -15,38 +16,43 @@ const dbCon = mysql.createConnection({
 //urlencoded(url인코딩데이터) data를 extended 알고리즘을 사용해서 분석
 router.use(bodyParser.urlencoded({extended:false}));
 
+//채팅
+router.get('/chat', function(req, res){
+    res.render('chat')
+})
+
 //페이징
 router.get("/pasing/:now", function(req, res){
+    // 검색한 포스트 값
+    var searchPost = {};
+    // console.log(searchPost);
+    // console.log(searchPost);
+    // console.log(searchPost);
+    // console.log(searchPost);
+    // console.log(searchPost);
      // 페이지 당 게시물 수
-    var page_size = 10;
+    let page_size = 10;
      // 페이지의 개수
-    var page_list_size = 10;
+    let page_list_size = 10;
      // limit DB에서 가져올 게시글의 수
-    var no = "";
+    let no = "";
      // 전체 게시물 수
-    var totalPageCount = 0;
+    let totalPageCount = 0;
 
     getConnection().query('select count(*) as cnr from posts', function(err2, data){
         if(err2){
             console.log(err2);
             res.render('error')
-            return
-        }        
-        console.log(data[0]);
-        console.log(data[0].cnr);
+            return;
+        }
 
         //전체 게시글 개수
         //Select해서 가져온 posts 테이블의 게시물 갯수를 가져온 뒤 data 객체에 담아 totalPageCount에 저장
         //RowDataPacket(객체를 생성하는 생성자 함수의 이름)으로 가져온 cnt객체(as 별칭)의 값을 저장
         totalPageCount = data[0].cnr;
 
-
         //현재 페이지
         var nowPage =  req.params.now;
-
-        router.get('/chat', function(req, res){
-            res.render('chat')
-        })
 
         console.log("현재 페이지" + nowPage + "," + "전체 게시글" + totalPageCount);
 
@@ -54,29 +60,25 @@ router.get("/pasing/:now", function(req, res){
         if(totalPageCount < 0) {
             totalPageCount = 0;
         }
-        
-        console.log(totalPageCount);
 
         //전체 페이지 수, 전체 세트 수, 현재 세트 번호, 현재 세트 내 출력될 시작 페이지, 현재 세트 내 출력될 마지막 페이지
         //전체 페이지 수
-        var totalPage = Math.ceil(totalPageCount / page_size);
+        let totalPage = Math.ceil(totalPageCount / page_size);
         //전체 세트 수
-        var totalSet = Math.ceil(totalPage / page_list_size);
+        let totalSet = Math.ceil(totalPage / page_list_size);
         //현재 세트 번호
-        var nowSet = Math.ceil(nowPage / page_list_size);
+        let nowSet = Math.ceil(nowPage / page_list_size);
         //현재 세트 내 출력될 시작 페이지(만약 2페이지면 11번째 게시물 부터 시작)
-        var startPage = ((nowSet - 1) * 10) + 1;
+        let startPage = ((nowSet - 1) * 10) + 1;
         //현재 세트 내 출력될 마지막 페이지(만약 2페이지면 20번이 마지막)
-        var lastPage = (startPage + page_list_size) - 1;
+        let lastPage = (startPage + page_list_size) - 1;
 
         //현재 페이지에 따라 DB에서 가져올 limit 설정
         if(nowPage < 0){
             no = 0;
         } else {
             no = (nowPage - 1) * 10;
-        }
-
-        console.log(no);
+        }       
 
         //result2 객체에 페이지, 세트 정보 저장
         var result2 = {
@@ -88,9 +90,7 @@ router.get("/pasing/:now", function(req, res){
             "nowSet" : nowSet,
             "startPage" : startPage,
             "lastPage" : lastPage
-        };
-
-        console.log(result2);
+        };       
 
         getConnection().query('select * from posts order by id asc limit ?, ?', [no, page_size], function(err, result){
             if(err){
@@ -184,8 +184,7 @@ router.get('/detail/:id', function(req, res){
             if(err){
                 res.render('error');
             } else{
-                getConnection().query('select * from posts where id = ?', [req.params.id], function(err, results){
-                    console.log(result)
+                getConnection().query('select * from posts where id = ?', [req.params.id], function(err, results){                    
                     res.render('detail', {data:results[0], data2:result});
                 });
             }
@@ -209,8 +208,7 @@ router.get('/download/upload/images/:name/:id', function(req, res){
             let fileExt = fileName.substring(endDot+1, fileLen).toLowerCase(); // 소문자로 파일명 파싱(캡처.png)
 
             //다운로드 받을 파일 경로
-            let file = __dirname + '/../upload/images/' + filePathName;
-            console.log(file);
+            let file = __dirname + '/../upload/images/' + filePathName;            
             let customName = fileExt;
             fm.getfileDownload(file, customName, req, res);
         }, 
@@ -259,9 +257,48 @@ router.get('/delete/:id', function(req, res){
     });
 });
 
+//검색
+router.get('/search', (req, res) => {
+    var queryData = url.parse(req.url, true).query;
+
+    if(queryData.category == 'title')
+    {        
+        getConnection().query('select title from posts where title = ?', [queryData.searchText], (err, result) =>{
+            if(err)
+            {
+                console.log(err);
+            }
+            else
+            {                
+                console.log(result);
+                console.log(result);
+                console.log(result);
+                console.log(result);
+                console.log(result);
+
+                searchPost = result;
+                res.redirect('/pasing/' + 1);
+            }
+        })
+    } else if(queryData.category == 'author')
+    {        
+        getConnection().query('select author from posts where author = ?', [queryData.searchText], (err, result) =>{
+            if(err)
+            {
+                console.log(err);
+            }
+            else
+            {
+                
+                searchPost = result;
+                res.redirect('/pasing/' + 1);
+            }
+        })
+    }    
+})
 
 function getConnection() {
-    return dbCon
+    return dbCon;
 };
 
 module.exports = router;

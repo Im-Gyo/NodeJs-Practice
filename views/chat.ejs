@@ -24,7 +24,7 @@
 					<textarea id ="chatView" class="chat_View" readonly></textarea>
 				</div>				            
             <form method ="post" action="/boardWrite" id ="chatSend">
-                <input id="name" class="name" type="text" readonly>
+                <input id="name" type="text">
                 <input id="message" class="form-control message" type="text"  placeholder="텍스트입력">
                 <button type="submit" class="btn btn-primary chat" value ="chat">전송</button>
             </form>	            
@@ -36,26 +36,48 @@
 <script src="//code.jquery.com/jquery-1.11.1.js"></script>
 
 <script>
-  let socket = io();
-  $('#chatSend').on('submit', function(e)
-  {
-    socket.emit('send message', $('#name').val(), $('#message').val());
-    $('#message').val('');
-    $('#message').focus();
-    e.preventDefault();
-  });
-  socket.on('receive message', function(msg)
-  {
-    $('#chatView').append(msg+'\n');
-    $('#chatView').scrollTop($('#chatView')[0].scrollHeight);
-  });
-  socket.on('change name', function(name)
-  {
-    $('#name').val(name);
-  });
-</script>
+  var socket = io();
+        //메시지 전송 시
+        $('#chatSend').on('submit', function(e)
+        {
+            socket.emit('send message', $('#name').val(), $('#message').val());
+            $('#message').val('');
+            $('#message').focus();
+            e.preventDefault();
+        });
+
+        //이름 생성 시
+        socket.on('create name', function(name)
+        {
+            $('#name').val(name);
+        })
+
+        //이름 변경 시
+        socket.on('change name', function(oldname, name)
+        {
+            $('#name').val(name);
+            $('#chatView').append(oldname + ' 님이 ' + name + '으로 닉네임을 변경했습니다.\n');
+        })
+        
+        //메시지를 받았을 시
+        socket.on('receive message', function(msg)
+        {
+            $('#chatView').append(msg+'\n');
+            $('#chatView').scrollTop($('#chatView')[0].scrollHeight);
+        });        
+
+        socket.on('new_disconnect', function(name)
+        {
+            $('#chatView').append(name + '님이 채팅방을 떠났습니다.\n');
+        })
+
+        socket.on('new_connect', function(name)
+        {
+            $('#chatView').append(name + '님이 채팅방에 참여했습니다.\n');
+        })
+    </script>
     <script src="/js/jquery.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/scripts.js"></script>
-  </body>
+</body>
 </html>

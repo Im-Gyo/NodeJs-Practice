@@ -20,22 +20,23 @@
 			<h3>
 				글 목록
 			</h3>
-			
+		<form method="GET" action="/search">
 			<ul class="mainSearch">
 				<li>
 					<select name="category">
-						<option value="제목">제목</option>						
-						<option value="작성자">작성자</option>
+						<option value="title" name ="title">제목</option>						
+						<option value="author" name ="author">작성자</option>
 					</select>
 				</li>
-
 				<li>
-					<input type="text" name="search">
+					<input type="text" name="searchText">
 				</li>
-				<li>
-					<a href="#" class="btn btn-secondary" type="button">검색</a>
-				</li>
+				<button type="submit" class="btn btn-secondary">
+					검색
+					<!-- <a href="#" class="btn btn-secondary" type="button">검색</a> -->
+				</button>
 			</ul>
+		</form>
 
 			<table class="table">
 				<thead>
