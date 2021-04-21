@@ -42,6 +42,22 @@ h3 {
     color: cornsilk;
 }
 
+.buttonCenter3 {
+    position: absolute;
+    top : 16px;
+    right: 14px;
+    background-color :cadetblue;
+    color: cornsilk;
+}
+
+.buttonCenter4 {
+    position: absolute;
+    top : 16px;
+    right: 112px;
+    background-color :cadetblue;
+    color: cornsilk;
+}
+
 .mainSearch{
     list-style: none;
     text-align: center;
@@ -68,4 +84,14 @@ h3 {
 .message {
     width : 50%;
     display: inline;
+}
+
+#element_to_pop_up { 
+    background-color:#fff;
+    border-radius:15px;
+    color:#000;
+    display:none; 
+    padding:20px;
+    min-width:400px;
+    min-height: 180px;
 }

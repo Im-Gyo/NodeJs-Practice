@@ -18,13 +18,15 @@
 	<div class="row">
 		<div class="col-md-12">
 			<h3>
-				글 목록
+				<a href="/search">글 목록</a>
 			</h3>
+			<div><a class="btn btn-secondary buttonCenter4" id="login" type="button">로그인</a></div>
+			<div><a class="btn btn-secondary buttonCenter3" id="register" type="button">회원가입</a></div>
 		<form method="GET" action="/search">
 			<ul class="mainSearch">
 				<li>
 					<select name="category">
-						<option value="title" name ="title">제목</option>						
+						<option value="title" name ="title">제목</option>		
 						<option value="author" name ="author">작성자</option>
 					</select>
 				</li>
@@ -32,8 +34,7 @@
 					<input type="text" name="searchText">
 				</li>
 				<button type="submit" class="btn btn-secondary">
-					검색
-					<!-- <a href="#" class="btn btn-secondary" type="button">검색</a> -->
+					검색					
 				</button>
 			</ul>
 		</form>
@@ -119,7 +120,7 @@
 
 				</ul>
 			</div> <a href="/boardWrite" class="btn btn-secondary buttonCenter" type="button">글작성</a>
-			<div> <a href="/chat" class="btn btn-secondary buttonCenter2" type="button">채팅방입장</a></div>
+			<div> <a href="/chat" class="btn btn-secondary buttonCenter2" type="button">채팅방입장</a></div>	
 		</div>
 	</div>
 </div>
@@ -127,5 +128,23 @@
     <script src="/js/jquery.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/scripts.js"></script>
+	<script src="/js/jquery.bpopup-0.1.1.min.js"></script>
+
+	<script>
+		;(function($)
+		{
+			(function()
+			{
+				$('#login').bind('click', function(e)
+				{
+					e.preventDefault();
+					$('#element_to_pop_up').bPopup(
+						{
+							
+						});
+				});
+			});
+		});(jQuery);
+	</script>
   </body>
 </html>
