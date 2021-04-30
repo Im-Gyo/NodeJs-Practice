@@ -34,7 +34,7 @@ class FileManager{
                 res.setHeader('Content-disposition', 'attachment; filename=' + this.getDownloadFilename(req, filename)); // 다운받아질 파일명 설정
                 res.setHeader('Content-type', mimetype); // 파일 형식 지정
                 let filestream = fs.createReadStream(file); // 스트림 읽기 처리 대상이 되는 파일을 지정
-                filestream.pipe(res); // ?
+                filestream.pipe(res);
             } else {
                 res.send('파일 없음');
                 return;

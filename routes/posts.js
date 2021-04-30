@@ -1,13 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const ejs = require('ejs');
+const path = require('path');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const multer = require('multer');
 const mime = require('mime');
 const mysql = require('mysql');
 const url =  require('url');
-const fileManager = require('../scheduler/fileManager')
+const fileManager = require('../scheduler/fileManager');
+const { urlencoded } = require('express');
 const dbCon = mysql.createConnection({
 
 });
@@ -17,10 +19,16 @@ var queryText, queryCategory, queryData;
 
 //urlencoded(url인코딩데이터) data를 extended 알고리즘을 사용해서 분석
 router.use(bodyParser.urlencoded({extended:false}));
+// router.use(bodyParser.raw());
+// router.use(bodyParser.text());
+
+//익스프레스 4.16버전부터 body-parser일부 기능이 익스프레스에 내장이 되어 따로 설치할 필요가 없음
+// router.use(express.json());
+// router.use(urlencoded({extended:false}));
 
 //채팅
 router.get('/chat', function(req, res){
-    res.render('chat')
+    res.render('chat');
 })
 
 //페이징
@@ -202,6 +210,11 @@ router.get("/pasing/:now", function(req, res){
                     res.render('error');
                     return;
                 } else {
+                    // result = JSON.stringify(result);
+                    // console.log('========================');
+                    // console.log(result);
+                    // console.log('========================');           
+
                     res.render('index', { data : result, pasing : result2 });
                 }
             });
@@ -211,7 +224,7 @@ router.get("/pasing/:now", function(req, res){
 
 // '/' 위치에 get요청을 받는 경우, 서버에 get요청이 있을 때 실행
 //메인페이지(조회)
-router.get('/', function(req, res){    
+router.get('/', function(req, res){
     //main으로 오면 pasing으로 리다이렉트
     res.redirect('/pasing/'+ 1)
 
@@ -353,10 +366,14 @@ router.get('/modify/:id', function(req, res){
 //수정등록
 router.post('/modify/:id', function(req, res){
     var body = req.body;
+    console.log('================================');
+    console.log(body);
+    console.log('================================');
+    
     getConnection().query(
         'update posts set title = ?, content = ?, author = ? where id = ?', 
         [body.title, body.content, body.author, req.params.id], 
-        function(){
+        function(err){
             if(err){
                 res.render('error')
             } else{
@@ -384,6 +401,48 @@ router.get('/search', (req, res) => {
     queryText = queryData.searchText;
     res.redirect('/pasing/' + 1);
 })
+
+//가위바위보
+// router.get('/battle', (req, res) => {
+//     let resunt = '';
+//     let random = Math.random();
+//     let randomInt = Math.floor(Number((random*3+1)));
+//     if(randomInt == 1)
+//     {
+//         resunt = 'rock';
+//     }
+//     else if(randomInt == 2)
+//     {
+//         resunt = 'paper';
+//     }
+//     else
+//     {
+//         resunt = 'scissors';
+//     }
+
+
+//     let resultStr = '민교 : ' + resunt + '\n';
+
+    
+//     random = Math.random();
+//     randomInt = Math.floor(Number((random*3+1)));
+//     if(randomInt == 1)
+//     {
+//         resunt = 'rock';
+//     }
+//     else if(randomInt == 2)
+//     {
+//         resunt = 'paper';
+//     }
+//     else
+//     {
+//         resunt = 'scissors';
+//     }
+
+//     resultStr += '태찬 : ' + resunt;
+
+//     res.send(resultStr);
+// })
 
 function getConnection() {
     return dbCon;

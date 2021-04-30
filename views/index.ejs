@@ -10,6 +10,7 @@
     <link href="/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/style.css" rel="stylesheet">
 	<link href="/css/custom.css" rel="stylesheet">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" rel="stylesheet"/>
 
   </head>
   <body>
@@ -20,8 +21,44 @@
 			<h3>
 				<a href="/search">글 목록</a>
 			</h3>
-			<div><a class="btn btn-secondary buttonCenter4" id="login" type="button">로그인</a></div>
-			<div><a class="btn btn-secondary buttonCenter3" id="register" type="button">회원가입</a></div>
+			<!--로그인 모달-->
+			<div id="login" class="modal">
+				<h4>로그인</h4>
+				<label for="loginID">
+					아이디
+				</label>
+				<input type="text" name="join_id "class="form-control">
+				<label for="loginPW">
+					비밀번호
+				</label>
+				<input type="password" name="join_pw" class="form-control">
+			</br>
+				<button type="button" onclick="join()">로그인</button></a>
+				<a href="#login" rel="modal:close"><button>닫기</button></a>
+			</div>
+			<a href="#login" rel="modal:open" class="btn btn-secondary buttonCenter4 modal:open" type="button">로그인</a>
+
+			<!--회원가입 모달-->
+			<div id="register" class="modal">
+				<h4>회원가입</h4>
+				<label for="nickName">
+					닉네임
+				</label>
+				<input type="text" name="reg_nickname" class="form-control">
+				<label for="registerID">
+					아이디
+				</label>
+				<input type="text" name="reg_id"class="form-control">
+				<label for="registerPW">
+					비밀번호
+				</label>
+				<input type="password" name="reg_pw" class="form-control">
+			</br>
+				<button type="button" onclick="register()">가입하기</button>
+				<a href="#register" rel="modal:close"><button>닫기</button></a>
+			</div>
+			<a href="#register" rel="modal:open" class="btn btn-secondary buttonCenter3 modal:open" type="button">회원가입</a>
+			
 		<form method="GET" action="/search">
 			<ul class="mainSearch">
 				<li>
@@ -60,7 +97,7 @@
 					<% data.forEach(function(post,index) { %>
 					<tr>
 						<td>
-							<%= post.id %>
+							<%=post.id%>
 						</td>
 						<td>
 							<a href='/detail/<%= post.id%>'><%= post.title %></a>
@@ -127,24 +164,70 @@
 
     <script src="/js/jquery.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
-    <script src="/js/scripts.js"></script>
-	<script src="/js/jquery.bpopup-0.1.1.min.js"></script>
+    <script src="/js/scripts.js"></script>	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment-with-locales.min.js" integrity="sha512-LGXaggshOkD/at6PFNcp2V2unf9LzFq6LE+sChH7ceMTDP0g2kn6Vxwgg7wkPP7AAtX+lmPqPdxB47A0Nz0cMQ==" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/ko.min.js"></script>
+
 
 	<script>
-		;(function($)
-		{
-			(function()
-			{
-				$('#login').bind('click', function(e)
-				{
-					e.preventDefault();
-					$('#element_to_pop_up').bPopup(
-						{
-							
-						});
-				});
+		$(document).ready(function(){
+			// var date = new Date();
+			// $('.createDate').text(moment(date).format('YYYY-MM-DD a HH:mm:ss'));
+
+			$modal = $(".modal");
+			
+			$(".modal--open").click(function(){
+				$modal.show();
+				return false;
 			});
-		});(jQuery);
+
+			$(".modal--close").click(function(){
+				$modal.hide();
+			});
+		});
+
+
+		function join()
+		{							
+				var sns1 = $('[name=join_id][type=text]').val()
+				var sns2 = $('[name=join_pw][type=password]').val()			
+				
+				if(!sns1 || !sns2)
+				{
+					alert('체크되지 않은 항목이 존재합니다.');
+					return;
+				}
+
+				var sendJsonObject = {}
+				sendJsonObject.protocol = 'memberLogin';				
+				sendJsonObject.id = sns1;
+				sendJsonObject.pw = sns2;
+				
+				protocolSendAjax(sendJsonObject, true, '/');		
+		}
+
+		function register() 
+		{
+			var sns4 = $('[name=reg_nickname][type=text]').val()
+			var sns5 = $('[name=reg_id][type=text]').val()
+			var sns6 = $('[name=reg_pw][type=password]').val()
+
+			if(!sns4 || !sns5 || !sns6)
+			{
+					alert('체크되지 않은 항목이 존재합니다.');
+					return;
+			}
+
+			var sendJsonObject = {}
+				sendJsonObject.protocol = 'memberRegister';				
+				sendJsonObject.nickName = sns4;
+				sendJsonObject.id = sns5;
+				sendJsonObject.pw = sns6;
+				
+			protocolSendAjax(sendJsonObject, true, '/');		
+		}
 	</script>
   </body>
 </html>

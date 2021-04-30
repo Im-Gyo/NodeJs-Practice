@@ -1,6 +1,7 @@
 /*모듈 import*/
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
@@ -13,12 +14,13 @@ const bodyParser = require('body-parser');
 
 //라우트로 분리
 const boardRouter = require('./routes/posts.js')
-const webSocket = require('./socket/socket.js')
+const webSocket = require('./socket/socket.js');
+const { fstat } = require('fs');
 
 const app = express();
 const server = http.createServer(app);
 const io = socket(server);
-app.set('view engine', 'ejs'); 
+app.set('view engine', 'ejs');
 
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({extended:false}));
@@ -34,6 +36,44 @@ app.use(webSocket(io));
 app.use('/', boardRouter);
 // app.use('/chat', chatRouter);
 // app.use(webSocket);
+
+//잘못된 호출이나 파라미터로 서버 종료문제 잡는 곳
+process.on('uncaughtException', function(err){
+    console.log('uncaughtException : ', err);
+    if(err.code == 'ECONNREFUSED' || err.code == 'EHOSTUNREACH'){
+        handler_connect_error(err);
+    } else if(err.code == 'ETIMEDOUT'){
+        handler_timeout(err);
+    }
+});
+
+//404 핸들러(아무런 url이 지정되어있지 않으므로 지정된 url이외에는 모두 에러로 처리)
+app.use(function(req, res, next){
+    //views 폴더에서 찾아봄
+    let reqPath = decodeURI(path.join(__dirname, './views', req.path));
+    if(fs.existsSync(reqPath)){
+        res.sendFile(reqPath);
+        return;
+    } else {
+        //views 폴더에서 없으면 upload폴더에서 검색
+        reqPath = decodeURI(path.join(__dirname, './upload', reqPath))
+        if(fs.existsSync(reqPath)){
+            res.sendFile(reqPath);
+            return;
+        }
+        else { 
+            //그래도 없으면 404
+            console.log(req.path + 'not found');
+            res.render('404.ejs');
+        }
+    }
+});
+
+//예기치못한 에러 처리
+app.use(function(err, req, res, next){
+    res.status(err.status || 500);
+    res.render('500.ejs');
+})
 
 var port = 5000;
 /*서버 실행*/

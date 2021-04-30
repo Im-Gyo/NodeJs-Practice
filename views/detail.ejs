@@ -44,13 +44,13 @@
 			</button> -->
 			<!-- <a href="/modity" class="btn btn-secondary buttonCenter" type="button">수정</a> -->
 		</form>
-		<a href="/modify/<%= data.id %>" class="btn btn-secondary buttonCenter" type="button">수정</a>
-		<a href="/delete/<%= data.id %>" class="btn btn-secondary buttonCenter" type="button">삭제</a>
-		<a href="/" class="btn btn-secondary buttonCenter" type="button">목록</a>
+		<a href="/modify/<%= data.id %>" class="btn btn-secondary" type="button">수정</a>
+		<a href="/delete/<%= data.id %>" class="btn btn-secondary" type="button">삭제</a>
+		<a href="/" class="btn btn-secondary" type="button">목록</a>
 		<h2>파일 다운로드</h2>
 		<%if(data2 != null) { %>
 			<%data2.forEach(function(file,index) { %>
-			<a href='/download/<%= file.filename%>/<%=file.id%>'><%= file.id %> - <%=file.fileOriName%></a><br>
+				<a href='/download/<%= file.filename%>/<%=file.id%>'><%= file.id %> - <%=file.fileOriName%></a><br>
 			<% }) %>
 		<% } %>
 			</div>
